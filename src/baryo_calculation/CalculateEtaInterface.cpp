@@ -33,198 +33,238 @@
 #include <BSMPT/baryo_calculation/Fluid_Type/tau_source.h>
 #include <BSMPT/baryo_calculation/Fluid_Type/BA_template.h>
 
-namespace BSMPT{
-namespace Baryo{
-
-std::pair<std::vector<bool>,int> CalculateEtaInterface::ReadConfigFile(const std::string& file) const
+namespace BSMPT
 {
-	std::pair<std::vector<bool>,int> res;
-	std::string line;
-	std::ifstream configFile(file);
-    if(not configFile.good())
-    {
-        std::string errmsg("Can not open file: " + file + " in function " + __func__);
-        throw std::runtime_error(errmsg);
-    }
-    std::vector<bool> method_transport_local;
-    int bot_mass_flag_local=0;
-	while(std::getline(configFile,line)){
-		if(boost::starts_with(line,"#") or line.empty()) continue;
-		std::for_each(line.begin(),line.end(),[](char &c) { c = ::tolower(c);} );
-        if(boost::starts_with(line,"include"))
-        {
-			std::stringstream ss(line);
-			std::vector<std::string> words;
-			std::string tmp;
-			while(ss>>tmp) words.push_back(tmp);
-			if(words.size() < 2){
-				std::string errmsg = "One of the settings in the EWBG config files is not configured correctly.";
+	namespace Baryo
+	{
+
+		std::pair<std::vector<bool>, int> CalculateEtaInterface::ReadConfigFile(const std::string &file) const
+		{
+			std::pair<std::vector<bool>, int> res;
+			std::string line;
+			std::ifstream configFile(file);
+			if (not configFile.good())
+			{
+				std::string errmsg("Can not open file: " + file + " in function " + __func__);
 				throw std::runtime_error(errmsg);
 			}
-			if(words.at(1) != "yes" and words.at(1) != "no"){
-				std::string errmsg = "One of the settings for the EWBG config file is not set to yes or no. Please change this.";
-				throw std::runtime_error(errmsg);
+			std::vector<bool> method_transport_local;
+			int bot_mass_flag_local = 0;
+			while (std::getline(configFile, line))
+			{
+				if (boost::starts_with(line, "#") or line.empty())
+					continue;
+				std::for_each(line.begin(), line.end(), [](char &c) { c = ::tolower(c); });
+				if (boost::starts_with(line, "include"))
+				{
+					std::stringstream ss(line);
+					std::vector<std::string> words;
+					std::string tmp;
+					while (ss >> tmp)
+						words.push_back(tmp);
+					if (words.size() < 2)
+					{
+						std::string errmsg = "One of the settings in the EWBG config files is not configured correctly.";
+						throw std::runtime_error(errmsg);
+					}
+					if (words.at(1) != "yes" and words.at(1) != "no")
+					{
+						std::string errmsg = "One of the settings for the EWBG config file is not set to yes or no. Please change this.";
+						throw std::runtime_error(errmsg);
+					}
+					method_transport_local.push_back(words.at(1) == "yes");
+				}
+
+				if (boost::starts_with(line, "massive"))
+				{
+					std::stringstream ss(line);
+					std::vector<std::string> words;
+					std::string tmp;
+					while (ss >> tmp)
+						words.push_back(tmp);
+					if (words.size() < 2)
+					{
+						std::string errmsg = "The setting for the bottom mass flag is missing.";
+						throw std::runtime_error(errmsg);
+					}
+					if (words.at(1) != "yes" and words.at(1) != "no")
+					{
+						std::string errmsg = "The setting for the bottom mass flag is not set correctly. Please change it to yes or no.";
+						throw std::runtime_error(errmsg);
+					}
+					if (words.at(1) == "yes")
+						bot_mass_flag_local = 1;
+				}
 			}
-            method_transport_local.push_back(words.at(1) == "yes");
+
+			configFile.close();
+
+			res.first = method_transport_local;
+			res.second = bot_mass_flag_local;
+
+			return res;
 		}
 
-		if(boost::starts_with(line,"massive")){
-			std::stringstream ss(line);
-			std::vector<std::string> words;
-			std::string tmp;
-			while(ss>>tmp) words.push_back(tmp);
-			if(words.size() < 2){
-				std::string errmsg = "The setting for the bottom mass flag is missing.";
+		CalculateEtaInterface::CalculateEtaInterface(const std::pair<std::vector<bool>, int> &config)
+			: method_transport{config.first}, bot_mass_flag{config.second}
+		{
+			if (config.first.size() != 7)
+			{
+				std::string errmsg = "Warning: ";
+				errmsg += __func__;
+				errmsg += " expects a vector of length 7 but only received ";
+				errmsg += std::to_string(config.first.size());
+				errmsg += ".";
 				throw std::runtime_error(errmsg);
 			}
-			if(words.at(1) != "yes" and words.at(1) != "no"){
-				std::string errmsg = "The setting for the bottom mass flag is not set correctly. Please change it to yes or no.";
-				throw std::runtime_error(errmsg);
-			}
-            if(words.at(1) == "yes") bot_mass_flag_local = 1;
 		}
-	}
 
-	configFile.close();
+		CalculateEtaInterface::CalculateEtaInterface(const std::string &file)
+			: CalculateEtaInterface(ReadConfigFile(file))
+		{
+		}
 
-    res.first=method_transport_local;
-    res.second = bot_mass_flag_local;
+		CalculateEtaInterface::CalculateEtaInterface(const std::vector<bool> &method_input, const int &bot_mass_flag_in)
+			: CalculateEtaInterface(std::make_pair(method_input, bot_mass_flag_in))
+		{
+		}
 
-	return res;
-}
+		CalculateEtaInterface::~CalculateEtaInterface()
+		{
+			// TODO Auto-generated destructor stub
+		}
 
+		std::vector<std::string> CalculateEtaInterface::legend() const
+		{
+			std::vector<std::string> etaLegend;
+			if (method_transport.at(0))
+				etaLegend.push_back("eta_TopOnly");
+			if (method_transport.at(1))
+				etaLegend.push_back("eta_TopBot");
+			if (method_transport.at(2))
+				etaLegend.push_back("eta_TopBotTau");
+			if (method_transport.at(3))
+				etaLegend.push_back("eta_PlasmaVelocities");
+			if (method_transport.at(4))
+				etaLegend.push_back("eta_PlasmaVelocitiesReplaced");
+			if (method_transport.at(5))
+				etaLegend.push_back("eta_template");
+			if (method_transport.at(6))
+				etaLegend.push_back("eta_Const");
 
-CalculateEtaInterface::CalculateEtaInterface(const std::pair<std::vector<bool>,int>& config)
-    : method_transport{config.first}, bot_mass_flag{config.second}
-{
-    if(config.first.size() != 6){
-        std::string errmsg = "Warning: ";
-        errmsg += __func__;
-        errmsg += " expects a vector of length 6 but only received ";
-        errmsg += std::to_string(config.first.size());
-        errmsg+= ".";
-        throw std::runtime_error(errmsg);
-    }
-}
+			return etaLegend;
+		}
 
-CalculateEtaInterface::CalculateEtaInterface(const std::string& file)
-    : CalculateEtaInterface(ReadConfigFile(file))
-{
-}
+		void CalculateEtaInterface::setNumerics(const double &vw_input,
+												std::vector<double> &vev_critical_input,
+												std::vector<double> &vev_symmetric_input,
+												const double &TC_input,
+												std::shared_ptr<Class_Potential_Origin> &modelPointer_input)
+		{
+			vw = vw_input;
+			vev_critical = vev_critical_input;
+			vev_symmetric = vev_symmetric_input;
+			TC = TC_input;
+			modelPointer = modelPointer_input;
+			if (modelPointer->get_Model() != ModelID::ModelIDs::C2HDM)
+			{
+				throw std::runtime_error("Baryogenesis is only implemented for the C2HDM at the moment.");
+			}
+			GSL_integration_mubl_container.init(vw, vev_critical, vev_symmetric, TC, modelPointer);
+		}
 
-CalculateEtaInterface::CalculateEtaInterface(const std::vector<bool>& method_input, const int& bot_mass_flag_in)
-    : CalculateEtaInterface(std::make_pair (method_input,bot_mass_flag_in))
-{
-}
+		void CalculateEtaInterface::setvw(double vw_in)
+		{
+			vw = vw_in;
+			GSL_integration_mubl_container.setvw(vw_in);
+		}
 
-CalculateEtaInterface::~CalculateEtaInterface() {
-	// TODO Auto-generated destructor stub
-}
+		std::vector<double> CalculateEtaInterface::CalcEta(const double &vw_input,
+														   std::vector<double> &vev_critical_input,
+														   std::vector<double> &vev_symmetric_input,
+														   const double &TC_input,
+														   std::shared_ptr<Class_Potential_Origin> &modelPointer_input)
+		{
+			setNumerics(vw_input, vev_critical_input, vev_symmetric_input, TC_input, modelPointer_input);
+			return CalcEta();
+		}
 
-std::vector<std::string> CalculateEtaInterface::legend() const
-{
-	std::vector<std::string> etaLegend;
-	if(method_transport.at(0)) etaLegend.push_back("eta_TopOnly");
-	if(method_transport.at(1)) etaLegend.push_back("eta_TopBot");
-	if(method_transport.at(2)) etaLegend.push_back("eta_TopBotTau");
-	if(method_transport.at(3)) etaLegend.push_back("eta_PlasmaVelocities");
-	if(method_transport.at(4)) etaLegend.push_back("eta_PlasmaVelocitiesReplaced");
-	if(method_transport.at(5)) etaLegend.push_back("eta_template");
+		std::vector<double> CalculateEtaInterface::CalcEta()
+		{
+			std::vector<double> eta;
+			if (method_transport.at(0))
+			{
+				GSL_integration_mubl_container.set_transport_method(1);
+				top_source C_top;
+				C_top.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_top);
+				C_eta.set_class(arr_nL, TC, vw);
+				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
+			}
+			if (method_transport.at(1))
+			{
+				GSL_integration_mubl_container.set_transport_method(2);
+				bot_source C_bot;
+				C_bot.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_bot);
+				C_eta.set_class(arr_nL, TC, vw);
+				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
+			}
+			if (method_transport.at(2))
+			{
+				GSL_integration_mubl_container.set_transport_method(3);
+				tau_source C_tau;
+				C_tau.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_tau);
+				C_eta.set_class(arr_nL, TC, vw);
+				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
+			}
+			if (method_transport.at(3))
+			{
+				GSL_integration_mubl_container.setUseVelocityTransportEquations(true);
+				eta.push_back(Integrate_mubl_interpolated(GSL_integration_mubl_container));
+			}
+			if (method_transport.at(4))
+			{
+				GSL_integration_mubl_container.setUseVelocityTransportEquations(false);
+				eta.push_back(Integrate_mubl_interpolated(GSL_integration_mubl_container));
+			}
+			if (method_transport.at(5))
+			{
+				GSL_integration_mubl_container.set_transport_method(4);
+				BA_template C_template;
+				C_template.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_template);
+				C_eta.set_class(arr_nL, TC, vw);
+				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
+			}
+			if (method_transport.at(6))
+			{
+				GSL_integration_mubl_container.set_transport_method(5);
+				BA_template C_template;
+				C_template.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_template);
+				C_eta.set_class(arr_nL, TC, vw);
+				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
+			}
+				return eta;
+		}
 
-	return etaLegend;
-}
-
-void CalculateEtaInterface::setNumerics(const double& vw_input,
-		std::vector<double>& vev_critical_input,
-		std::vector<double>& vev_symmetric_input,
-        const double& TC_input,
-		std::shared_ptr<Class_Potential_Origin>& modelPointer_input){
-	vw=vw_input;
-	vev_critical=vev_critical_input;
-	vev_symmetric=vev_symmetric_input;
-    TC=TC_input;
-	modelPointer=modelPointer_input;
-    if (modelPointer->get_Model() != ModelID::ModelIDs::C2HDM){
-        throw std::runtime_error("Baryogenesis is only implemented for the C2HDM at the moment.");
-    }
-    GSL_integration_mubl_container.init(vw,vev_critical,vev_symmetric,TC,modelPointer);
-}
-
-void CalculateEtaInterface::setvw(double vw_in){
-	vw=vw_in;
-	GSL_integration_mubl_container.setvw(vw_in);
-}
-
-std::vector<double> CalculateEtaInterface::CalcEta(const double& vw_input,
-			std::vector<double>& vev_critical_input,
-			std::vector<double>& vev_symmetric_input,
-			const double& TC_input,
-			std::shared_ptr<Class_Potential_Origin>& modelPointer_input){
-    setNumerics(vw_input,vev_critical_input,vev_symmetric_input,TC_input,modelPointer_input);
-	return CalcEta();
-}
-
-std::vector<double> CalculateEtaInterface::CalcEta()
-{
-	std::vector<double> eta;
-	if(method_transport.at(0)){
-		GSL_integration_mubl_container.set_transport_method(1);
-		top_source C_top;
-		C_top.set_class(bot_mass_flag, GSL_integration_mubl_container,Calc_Gam_inp,Calc_Scp_inp,Calc_kappa_inp);
-		auto arr_nL = set_up_nL_grid(n_step , GSL_integration_mubl_container , C_top );
-		C_eta.set_class(arr_nL,TC,vw);
-		eta.push_back(Nintegrate_eta(C_eta,0 , GSL_integration_mubl_container.getZMAX()));
-	}
-	if(method_transport.at(1)){
-		GSL_integration_mubl_container.set_transport_method(2);
-		bot_source C_bot;
-		C_bot.set_class(bot_mass_flag, GSL_integration_mubl_container,Calc_Gam_inp,Calc_Scp_inp,Calc_kappa_inp);
-		auto arr_nL = set_up_nL_grid(n_step , GSL_integration_mubl_container , C_bot );
-		C_eta.set_class(arr_nL,TC,vw);
-		eta.push_back(Nintegrate_eta(C_eta,0 , GSL_integration_mubl_container.getZMAX()));
-	}
-	if(method_transport.at(2)){
-		GSL_integration_mubl_container.set_transport_method(3);
-		tau_source C_tau;
-		C_tau.set_class(bot_mass_flag, GSL_integration_mubl_container,Calc_Gam_inp,Calc_Scp_inp,Calc_kappa_inp);
-		auto arr_nL = set_up_nL_grid(n_step , GSL_integration_mubl_container , C_tau);
-		C_eta.set_class(arr_nL,TC,vw);
-		eta.push_back(Nintegrate_eta(C_eta,0 , GSL_integration_mubl_container.getZMAX()));
-	}
-	if(method_transport.at(3)){
-		GSL_integration_mubl_container.setUseVelocityTransportEquations(true);
-		eta.push_back(Integrate_mubl_interpolated(GSL_integration_mubl_container));
-	}
-	if(method_transport.at(4)){
-		GSL_integration_mubl_container.setUseVelocityTransportEquations(false);
-		eta.push_back(Integrate_mubl_interpolated(GSL_integration_mubl_container));
-	}
-	if(method_transport.at(5)){
-		GSL_integration_mubl_container.set_transport_method(4);
-		BA_template C_template;
-		C_template.set_class(bot_mass_flag, GSL_integration_mubl_container,Calc_Gam_inp,Calc_Scp_inp,Calc_kappa_inp);
-		auto arr_nL = set_up_nL_grid(n_step,GSL_integration_mubl_container,C_template);
-		C_eta.set_class(arr_nL,TC,vw);
-		eta.push_back(Nintegrate_eta(C_eta,0,GSL_integration_mubl_container.getZMAX()));
-
-	}
-	return eta;
-}
-
-
-double CalculateEtaInterface::getLW() const{
-	return GSL_integration_mubl_container.getLW();
-}
-Calc_Gam_M CalculateEtaInterface::get_class_CalcGamM() const{
-    return Calc_Gam_inp;
-}
-Calc_Scp CalculateEtaInterface::get_class_Scp() const{
-    return Calc_Scp_inp;
-}
-Calc_kappa_t CalculateEtaInterface::get_class_kappa() const{
-    return Calc_kappa_inp;
-}
-
-
-}
-}
+			double CalculateEtaInterface::getLW() const
+			{
+				return GSL_integration_mubl_container.getLW();
+			}
+			Calc_Gam_M CalculateEtaInterface::get_class_CalcGamM() const
+			{
+				return Calc_Gam_inp;
+			}
+			Calc_Scp CalculateEtaInterface::get_class_Scp() const
+			{
+				return Calc_Scp_inp;
+			}
+			Calc_kappa_t CalculateEtaInterface::get_class_kappa() const
+			{
+				return Calc_kappa_inp;
+			}
+		}
+	} // namespace Baryo
