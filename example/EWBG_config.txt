@@ -19,5 +19,8 @@ Treat the bottom quark massive in the Fluid Ansätze
 Massive:    no
 
 Template Ansatz 
+Include:    no
+
+Const additional term
 Include:    yes
 

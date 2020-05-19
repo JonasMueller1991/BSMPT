@@ -1,44 +1,74 @@
 #ifndef CONST_SOURCE_H
 #define CONST_SOURCE_H
 
-#include<iostream>
-#include <BSMPT/models/IncludeAllModels.h>//Needed to call models from BSMPT
+#include <iostream>
+#include <BSMPT/models/IncludeAllModels.h> //Needed to call models from BSMPT
 #include <boost/numeric/odeint.hpp>
 #include <boost/math/interpolators/cubic_b_spline.hpp>
 #include <BSMPT/baryo_calculation/Fluid_Type/gen_func_fluid.h>
 
-namespace BSMPT{
-namespace Baryo{
-
-using namespace boost::numeric::odeint;
-typedef std::vector<double> state_type; // Common type def for the boos implementation
-
-
-class const_source : public gen_fluid 
+namespace BSMPT
 {
-    private:
-    public:
-        /**
+    namespace Baryo
+    {
+
+        using namespace boost::numeric::odeint;
+        typedef std::vector<double> state_type; // Common type def for the boos implementation
+
+        class const_source : public gen_fluid
+        {
+        private:
+            /**
+         * @brief O(1) prefactor for interaction rate of the dim6 Operator
+         * 
+         */
+            double kappaQL;
+            /**
+         * @brief Energy Scale of the dim6 operator as defined in 1811.11104 below Eq.24
+         * 
+         */
+            double LambdaQL ;
+
+        public:
+            using gen_fluid::set_class; //Overloaded set_class function from mother class
+            /**
+             * @brief Set the class object Overloaded set_class function to additionally setting kappaQL and LambdaQL
+             * 
+             * @param bottom_mass_inp  Defined as in gen_fluid::set_class
+             * @param container Defined as in gen_fluid::set_class
+             * @param Calc_Gam_inp Defined as in gen_fluid::set_class
+             * @param Calc_Scp_inp Defined as in gen_fluid::set_class
+             * @param Calc_kappa_inp Defined as in gen_fluid::set_class
+             * @param kappaQL_inp kappaQL O(1) prefactor for the interaction rate GammaQL
+             * @param LambdaQL_inp Energy scale of the dim6 operator
+             */
+            void set_class(
+                const int bottom_mass_inp,
+                struct GSL_integration_mubl &container,
+                const Calc_Gam_M &Calc_Gam_inp,
+                const Calc_Scp &Calc_Scp_inp,
+                const Calc_kappa_t &Calc_kappa_inp,
+                const double kappaQL_inp,
+                const double LambdaQL_inp);
+            /**
          * @brief Differential system of equations for the transport equations --> Second order possible
          * 
          * @param omega Vector containing mu and its first derivatives
          * @param domega Vector containing muprime and muprimeprime
          * @param z Wall distance z 
          */
-        void operator()(const state_type & omega,state_type &domega , const double z);
-        /**
+            void operator()(const state_type &omega, state_type &domega, const double z);
+            /**
          * @brief Evaluates the left-handed fermion density in front of the bubble wall --> Needed to create the grid
          * 
          * @param z_start Boundary condition for the bubble wall distance where the chemical potentials are assumed to vanish
          * @param z_end Bubble wall distance where nL is evaluated
          * @return double Returns the left-handed fermion density in front of the bubble wall evaluated at z_end
          */
-        double Calc_nL(double z_start, double z_end) const;
-};
+            double Calc_nL(double z_start, double z_end) const;
+        };
 
-
-}//namespace end: Baryo
-}//namespace: BSMPT
-
+    } // namespace Baryo
+} // namespace BSMPT
 
 #endif

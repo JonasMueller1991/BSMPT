@@ -32,6 +32,7 @@
 #include <BSMPT/baryo_calculation/Fluid_Type/bot_source.h>
 #include <BSMPT/baryo_calculation/Fluid_Type/tau_source.h>
 #include <BSMPT/baryo_calculation/Fluid_Type/BA_template.h>
+#include <BSMPT/baryo_calculation/Fluid_Type/const_source.h>
 
 namespace BSMPT
 {
@@ -189,6 +190,19 @@ namespace BSMPT
 			return CalcEta();
 		}
 
+		std::vector<double> CalculateEtaInterface::CalcEta(const double &vw_input,
+														   std::vector<double> &vev_critical_input,
+														   std::vector<double> &vev_symmetric_input,
+														   const double &TC_input,
+														   std::shared_ptr<Class_Potential_Origin> &modelPointer_input,
+														   const double &kappaQL_inp,
+														   const double &LambdaQL_inp)
+		{
+			kappaQL = kappaQL_inp;
+			LambdaQL= LambdaQL_inp;
+			return CalcEta(vw_input,vev_critical_input,vev_symmetric_input,TC_input,modelPointer_input);
+		}
+
 		std::vector<double> CalculateEtaInterface::CalcEta()
 		{
 			std::vector<double> eta;
@@ -241,30 +255,30 @@ namespace BSMPT
 			if (method_transport.at(6))
 			{
 				GSL_integration_mubl_container.set_transport_method(5);
-				BA_template C_template;
-				C_template.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp);
-				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_template);
+				const_source C_const;
+				C_const.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp, kappaQL, LambdaQL);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_const);
 				C_eta.set_class(arr_nL, TC, vw);
 				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
 			}
-				return eta;
+			return eta;
 		}
 
-			double CalculateEtaInterface::getLW() const
-			{
-				return GSL_integration_mubl_container.getLW();
-			}
-			Calc_Gam_M CalculateEtaInterface::get_class_CalcGamM() const
-			{
-				return Calc_Gam_inp;
-			}
-			Calc_Scp CalculateEtaInterface::get_class_Scp() const
-			{
-				return Calc_Scp_inp;
-			}
-			Calc_kappa_t CalculateEtaInterface::get_class_kappa() const
-			{
-				return Calc_kappa_inp;
-			}
+		double CalculateEtaInterface::getLW() const
+		{
+			return GSL_integration_mubl_container.getLW();
+		}
+		Calc_Gam_M CalculateEtaInterface::get_class_CalcGamM() const
+		{
+			return Calc_Gam_inp;
+		}
+		Calc_Scp CalculateEtaInterface::get_class_Scp() const
+		{
+			return Calc_Scp_inp;
+		}
+		Calc_kappa_t CalculateEtaInterface::get_class_kappa() const
+		{
+			return Calc_kappa_inp;
 		}
 	} // namespace Baryo
+} // namespace BSMPT

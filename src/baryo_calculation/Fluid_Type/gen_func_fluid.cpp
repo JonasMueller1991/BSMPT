@@ -297,7 +297,8 @@ double NIntegrate_kappa(const Calc_kappa_t& C_kap)
     double eps = 1e-5;
     double xstart = C_kap.mt/C_kap.Temp+eps;
     double xend = 3*1e2;
-
+    if(debug) std::cout<<"m_f = " <<C_kap.mt<<std::endl;
+    if(debug) std::cout<<"T = " << C_kap.Temp<<std::endl;
     integrate_adaptive(make_controlled( abs_err , rel_err , error_stepper_type() ) , C_kap , kappa , xstart , xend , stepsize_initial );
 	if(debug) std::cout<<"numerical evaluation kappa = " << kappa[0]<<std::endl;
 

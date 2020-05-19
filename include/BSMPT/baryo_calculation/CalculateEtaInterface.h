@@ -31,17 +31,18 @@
 
 #include <BSMPT/baryo_calculation/Fluid_Type/gen_calc.h>
 
+namespace BSMPT
+{
+	namespace Baryo
+	{
 
-
-namespace BSMPT{
-namespace Baryo{
-
-/**
+		/**
  * This is an interface class to call the different EWBG methods
  */
-class CalculateEtaInterface{
-protected:
-	/**
+		class CalculateEtaInterface
+		{
+		protected:
+			/**
 	 * Bool vector to tell which EWBG method is used and which is not. At the moment this is \n
 	 * method_transport(0) --> top only included in transport equations \n
 	 * method_transport(1) --> top+bot included in transport equations \n
@@ -50,98 +51,100 @@ protected:
 	 * method_transport(4) --> Huber Ansatz with plasma velocities replaced by the second derivatives
 	 * method_transport(5) --> Template for additional transport equations
 	 */
-    std::vector<bool> method_transport;
+			std::vector<bool> method_transport;
 
-	/**
+			/**
 	 * the bubble wall velocity
 	 */
-	double vw;
-	/**
+			double vw;
+			/**
 	 * The critical temperature
 	 */
-	double TC;
-	/**
+			double TC;
+			/**
 	 * The vev in the broken phase at the critical temperature
 	 */
-	std::vector<double> vev_critical;
-	/**
+			std::vector<double> vev_critical;
+			/**
 	 * The vev in the symmetric phase at the critical temperature
 	 */
-	std::vector<double> vev_symmetric;
-	/**
+			std::vector<double> vev_symmetric;
+			/**
 	 * modelPointer for the used parameter point
 	 */
-	std::shared_ptr<Class_Potential_Origin> modelPointer;
-	// /**
-	//  * struct to pass all necessary informations for the transport methods to the respective classes. Also calculates the wall thickness LW
-	//  */
-	
-	// GSL_integration_mubl GSL_integration_mubl_container;
-	
-	/**
+			std::shared_ptr<Class_Potential_Origin> modelPointer;
+			// /**
+			//  * struct to pass all necessary informations for the transport methods to the respective classes. Also calculates the wall thickness LW
+			//  */
+
+			// GSL_integration_mubl GSL_integration_mubl_container;
+
+			/**
 	 * Initialisation of Gam_M class for the numerical evaluation of Gamma_M
 	 */
-	Calc_Gam_M Calc_Gam_inp;
-	/**
+			Calc_Gam_M Calc_Gam_inp;
+			/**
 	 * Initialisation of S_CP class for the numerical evaluation of S_CP
 	 */
-	Calc_Scp Calc_Scp_inp;
-	/**
+			Calc_Scp Calc_Scp_inp;
+			/**
 	 * Initialisation of kappa class for the numerical evaluation of kappa
 	 */
-	Calc_kappa_t Calc_kappa_inp;
-	/**
+			Calc_kappa_t Calc_kappa_inp;
+			/**
 	 * The step size used in the fluid methods
 	 */
-	const int n_step=50;
-	/**
+			const int n_step = 50;
+			/**
 	 * The member instance of the Calc_eta class to calculate the fluid Ansatz
 	 */
-	Calc_eta C_eta;
-	/**
+			Calc_eta C_eta;
+			/**
 	 * Set if the bot is treated as massive (1) or not (2)
 	 */
-	int bot_mass_flag;
-public:
-	/**
+			int bot_mass_flag;
+
+			
+		public:
+			double kappaQL;
+			double LambdaQL;
+			/**
 	 * struct to pass all necessary informations for the transport methods to the respective classes. Also calculates the wall thickness LW
 	 */
-	GSL_integration_mubl GSL_integration_mubl_container;
-	
-    /**
+			GSL_integration_mubl GSL_integration_mubl_container;
+
+			/**
      * @brief CalculateEtaInterface Initialises the class with a config pair
      * @param config config.first sets the CalculateEtaInterface::method_transport and second CalculateEtaInterface::bot_mass_flag
      */
-    CalculateEtaInterface(const std::pair<std::vector<bool>,int>& config);
+			CalculateEtaInterface(const std::pair<std::vector<bool>, int> &config);
 
-	/**
+			/**
 	 * Initialises the class member and sets the CalculateEtaInterface::method_transport and CalculateEtaInterface::bot_mass_flag
 	 * @param method_input Sets the CalculateEtaInterface::method_transport member
 	 * @param bot_mass_flag_in Sets the CalculateEtaInterface::bot_mass_flag member
 	 */
-    CalculateEtaInterface(const std::vector<bool>& method_input, const int& bot_mass_flag_in);
+			CalculateEtaInterface(const std::vector<bool> &method_input, const int &bot_mass_flag_in);
 
-	/**
+			/**
 	 * Initialises the class member and sets the CalculateEtaInterface::method_transport and CalculateEtaInterface::bot_mass_flag
 	 * with the input given in the input file
 	 * @param file input file to get the settings
 	 */
-	CalculateEtaInterface(const std::string& file);
-	
+			CalculateEtaInterface(const std::string &file);
 
-	virtual ~CalculateEtaInterface();
+			virtual ~CalculateEtaInterface();
 
-
-	/**
+			/**
 	 * Read in the input file to get the configuration for the class
 	 */
-    std::pair<std::vector<bool>,int> ReadConfigFile(const std::string& file) const;
+			std::pair<std::vector<bool>, int> ReadConfigFile(const std::string &file) const;
 
-	/**
+			/**
 	 * Returns a string with the labels of the used EWBG methods stored in CalculateEtaInterface::method_transport
 	 */
-    std::vector<std::string> legend() const;
-	/**
+			std::vector<std::string> legend() const;
+			/**
 	 * Sets the numerical values needed for the calculation
 	 * @param vw_input Sets the wall velocity CalculateEtaInterface::vw
 	 * @param vev_critical_input Sets the vev in the broken phase CalculateEtaInterface::vev_critical
@@ -150,18 +153,18 @@ public:
      * @param modelPointer_input Sets the used parameter point CalculateEtaInterface::modlePointer
 	 * @return The labels of the different EWBG methods
 	 */
-	void setNumerics(const double& vw_input,
-		std::vector<double>& vev_critical_input,
-		std::vector<double>& vev_symmetric_input,
-		const double& TC_input,
-		std::shared_ptr<Class_Potential_Origin>& modelPointer_input);
-	/**
+			void setNumerics(const double &vw_input,
+							 std::vector<double> &vev_critical_input,
+							 std::vector<double> &vev_symmetric_input,
+							 const double &TC_input,
+							 std::shared_ptr<Class_Potential_Origin> &modelPointer_input);
+			/**
 	 * Calculates all EWBG methods turned on in CalculateEtaInterface::method_transport with the numerical values set in
 	 * CalculateEtaInterface::setNumerics()
 	 * @return The results of the different EWBG methods
 	 */
-    std::vector<double> CalcEta();
-	/**
+			std::vector<double> CalcEta();
+			/**
 	 * Calls the CalculateEtaInterface::setNumerics() function and then calculates the EWBG methods stored in
 	 * CalculateEtaInterface::method_transport
 	 * @param vw_input Sets the wall velocity CalculateEtaInterface::vw
@@ -171,42 +174,57 @@ public:
      * @param modelPointer_input Sets the used parameter point CalculateEtaInterface::modlePointer
 	 * @return The results of the different EWBG methods
 	 */
-	std::vector<double> CalcEta(const double& vw_input,
-			std::vector<double>& vev_critical_input,
-			std::vector<double>& vev_symmetric_input,
-			const double& TC_input,
-			std::shared_ptr<Class_Potential_Origin>& modelPointer_input);
-	/**
+			std::vector<double> CalcEta(const double &vw_input,
+										std::vector<double> &vev_critical_input,
+										std::vector<double> &vev_symmetric_input,
+										const double &TC_input,
+										std::shared_ptr<Class_Potential_Origin> &modelPointer_input);
+			/**
+	 * Calls the CalculateEtaInterface::setNumerics() function and then calculates the EWBG methods stored in
+	 * CalculateEtaInterface::method_transport
+	 * @param vw_input Sets the wall velocity CalculateEtaInterface::vw
+	 * @param vev_critical_input Sets the vev in the broken phase CalculateEtaInterface::vev_critical
+	 * @param vev_symmetric_input Sets the vev in the symmetric phase CalculateEtaInterface::vev_symmetric
+	 * @param TC_input Sets the critical temperature CalculateEtaInterface::TC
+     * @param modelPointer_input Sets the used parameter point CalculateEtaInterface::modlePointer
+	 * @return The results of the different EWBG methods
+	 */
+			std::vector<double> CalcEta(const double &vw_input,
+										std::vector<double> &vev_critical_input,
+										std::vector<double> &vev_symmetric_input,
+										const double &TC_input,
+										std::shared_ptr<Class_Potential_Origin> &modelPointer_input,
+										const double &kappaQL,
+										const double &LambdaQL);
+			/**
 	 * Sets the wall velocity CalculateEtaInterface::vw
 	 * @param vw_in Input value for the wall velocity CalculateEtaInterface::vw
 	 */
-	void setvw(double vw_in);
+			void setvw(double vw_in);
 
-	/**
+			/**
 	 * @return Wall thickness LW calculated through GSL_integration_mubl::init()
 	 */
-	double getLW() const;
+			double getLW() const;
 
-    /**
+			/**
      * @brief get_class_CalcGamM
      * @return Calc_Gam_inp
      */
-    Calc_Gam_M get_class_CalcGamM() const;
-    /**
+			Calc_Gam_M get_class_CalcGamM() const;
+			/**
      * @brief get_class_Scp
      * @return Calc_Scp_inp
      */
-    Calc_Scp get_class_Scp() const;
-    /**
+			Calc_Scp get_class_Scp() const;
+			/**
      * @brief get_class_kappa
      * @return Calc_kappa_inp
      */
-    Calc_kappa_t get_class_kappa() const;
+			Calc_kappa_t get_class_kappa() const;
+		};
 
-
-};
-
-}
-}
+	} // namespace Baryo
+} // namespace BSMPT
 
 #endif /* SRC_BARYO_CALCULATION_CALCULATEETAINTERFACE_H_ */
