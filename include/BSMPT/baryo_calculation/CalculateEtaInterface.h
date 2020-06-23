@@ -104,10 +104,10 @@ namespace BSMPT
 	 */
 			int bot_mass_flag;
 
-			
 		public:
-			double kappaQL;
+			double kappaQL = 1;
 			double LambdaQL;
+
 			/**
 	 * struct to pass all necessary informations for the transport methods to the respective classes. Also calculates the wall thickness LW
 	 */
@@ -158,6 +158,13 @@ namespace BSMPT
 							 std::vector<double> &vev_symmetric_input,
 							 const double &TC_input,
 							 std::shared_ptr<Class_Potential_Origin> &modelPointer_input);
+			void setNumerics(const double &vw_input,
+							 std::vector<double> &vev_critical_input,
+							 std::vector<double> &vev_symmetric_input,
+							 const double &TC_input,
+							 std::shared_ptr<Class_Potential_Origin> &modelPointer_input,
+							 const double LambdaQL_inp,
+							 const double mChi_inp);
 			/**
 	 * Calculates all EWBG methods turned on in CalculateEtaInterface::method_transport with the numerical values set in
 	 * CalculateEtaInterface::setNumerics()
@@ -194,8 +201,8 @@ namespace BSMPT
 										std::vector<double> &vev_symmetric_input,
 										const double &TC_input,
 										std::shared_ptr<Class_Potential_Origin> &modelPointer_input,
-										const double &kappaQL,
-										const double &LambdaQL);
+										const double &LambdaQL,
+										const double &mChi);
 			/**
 	 * Sets the wall velocity CalculateEtaInterface::vw
 	 * @param vw_in Input value for the wall velocity CalculateEtaInterface::vw

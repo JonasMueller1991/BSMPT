@@ -262,6 +262,9 @@ namespace BSMPT{
 
 
   public:
+    double kappaQL=1;
+    double LambdaQL=0;
+    double mChi=0;
       /**
         * set the CP violating phase in the symmetric vacuum
         */
@@ -397,7 +400,10 @@ namespace BSMPT{
       void init(const double& vw_input, std::vector<double>& vev_critical_input, std::vector<double>& vev_symmetric_input,
                 const double& TC_input,
                 std::shared_ptr<Class_Potential_Origin>& modelPointer_input);
-
+      void init(const double& vw_input, std::vector<double>& vev_critical_input, std::vector<double>& vev_symmetric_input,
+                const double& TC_input,
+                std::shared_ptr<Class_Potential_Origin>& modelPointer_input,
+                const double kappaQL_inp, const double LambdaQL_inp, const double mChi_inp);
       /**
        * @brief getModelPointer
        * @return the shared_ptr to the model

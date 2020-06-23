@@ -403,9 +403,11 @@ class gen_fluid
          */
         double Gam_Y_tau;
 
-        double kappa_QL_0   =   6;
-        double kappa_H_0    =   4;
-        double kappa_QR_0   =   3;
+        double kappa_QL_0   =   6;//Taken from 1710.04061-->SU(2) left-handed quark
+        double kappa_H_0    =   4;//Taken from 1710.04061-->SU(2) complex scalar doublet
+        double kappa_QR_0   =   3;//Taken from 1710.04061--> right-handed fermion singlet
+        double kappa_LL_0   =   2;//Left-handed Lepton
+        double kappa_RL_0   =   1;//Right-handed Lepton
 
         
 

@@ -33,6 +33,7 @@
 #include <BSMPT/baryo_calculation/Fluid_Type/tau_source.h>
 #include <BSMPT/baryo_calculation/Fluid_Type/BA_template.h>
 #include <BSMPT/baryo_calculation/Fluid_Type/const_source.h>
+#include <BSMPT/baryo_calculation/Fluid_Type/SUSY_lepton_source.h>
 
 namespace BSMPT
 {
@@ -109,7 +110,7 @@ namespace BSMPT
 		CalculateEtaInterface::CalculateEtaInterface(const std::pair<std::vector<bool>, int> &config)
 			: method_transport{config.first}, bot_mass_flag{config.second}
 		{
-			if (config.first.size() != 7)
+			if (config.first.size() != 8)
 			{
 				std::string errmsg = "Warning: ";
 				errmsg += __func__;
@@ -152,6 +153,8 @@ namespace BSMPT
 				etaLegend.push_back("eta_template");
 			if (method_transport.at(6))
 				etaLegend.push_back("eta_Const");
+			if (method_transport.at(7))
+				etaLegend.push_back("eta_SUSYLepton");
 
 			return etaLegend;
 		}
@@ -174,6 +177,25 @@ namespace BSMPT
 			GSL_integration_mubl_container.init(vw, vev_critical, vev_symmetric, TC, modelPointer);
 		}
 
+		void CalculateEtaInterface::setNumerics(const double &vw_input,
+												std::vector<double> &vev_critical_input,
+												std::vector<double> &vev_symmetric_input,
+												const double &TC_input,
+												std::shared_ptr<Class_Potential_Origin> &modelPointer_input,
+												const double LambdaQL_inp,
+												const double mChi_inp)
+		{
+						vw = vw_input;
+			vev_critical = vev_critical_input;
+			vev_symmetric = vev_symmetric_input;
+			TC = TC_input;
+			modelPointer = modelPointer_input;
+			if (modelPointer->get_Model() != ModelID::ModelIDs::C2HDM)
+			{
+				throw std::runtime_error("Baryogenesis is only implemented for the C2HDM at the moment.");
+			}
+			GSL_integration_mubl_container.init(vw, vev_critical, vev_symmetric, TC, modelPointer,1/*kappaQL=1*/,LambdaQL_inp,mChi_inp);
+		}
 		void CalculateEtaInterface::setvw(double vw_in)
 		{
 			vw = vw_in;
@@ -195,12 +217,11 @@ namespace BSMPT
 														   std::vector<double> &vev_symmetric_input,
 														   const double &TC_input,
 														   std::shared_ptr<Class_Potential_Origin> &modelPointer_input,
-														   const double &kappaQL_inp,
-														   const double &LambdaQL_inp)
+														   const double &LambdaQL_inp,
+														   const double &mChi_inp)
 		{
-			kappaQL = kappaQL_inp;
-			LambdaQL= LambdaQL_inp;
-			return CalcEta(vw_input,vev_critical_input,vev_symmetric_input,TC_input,modelPointer_input);
+			setNumerics(vw_input, vev_critical_input, vev_symmetric_input, TC_input, modelPointer_input, LambdaQL_inp, mChi_inp);
+			return CalcEta();
 		}
 
 		std::vector<double> CalculateEtaInterface::CalcEta()
@@ -258,6 +279,17 @@ namespace BSMPT
 				const_source C_const;
 				C_const.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp, kappaQL, LambdaQL);
 				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_const);
+				C_eta.set_class(arr_nL, TC, vw);
+				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
+			}
+
+			if (method_transport.at(7))
+			{
+				std::cout << "Called method 7" << std::endl;
+				GSL_integration_mubl_container.set_transport_method(6);
+				SUSY_lepton_source C_SUSY;
+				C_SUSY.set_class(bot_mass_flag, GSL_integration_mubl_container, Calc_Gam_inp, Calc_Scp_inp, Calc_kappa_inp,GSL_integration_mubl_container.LambdaQL,GSL_integration_mubl_container.mChi);
+				auto arr_nL = set_up_nL_grid(n_step, GSL_integration_mubl_container, C_SUSY);
 				C_eta.set_class(arr_nL, TC, vw);
 				eta.push_back(Nintegrate_eta(C_eta, 0, GSL_integration_mubl_container.getZMAX()));
 			}

@@ -8,7 +8,8 @@ set(header
   ${header_path}/Fluid_Type/tau_source.h
   ${header_path}/Fluid_Type/BA_template.h
   ${header_path}/Fluid_Type/const_source.h
-	${header_path}/CalculateEtaInterface.h
+  ${header_path}/Fluid_Type/SUSY_lepton_source.h
+  ${header_path}/CalculateEtaInterface.h
 )
 
 set(src
@@ -20,6 +21,7 @@ set(src
   Fluid_Type/tau_source.cpp
   Fluid_Type/BA_template.cpp
   Fluid_Type/const_source.cpp
+  Fluid_Type/SUSY_lepton_source.cpp
   CalculateEtaInterface.cpp
 )
 

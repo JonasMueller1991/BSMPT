@@ -60,7 +60,7 @@ double top_source::Calc_nL(double z_start, double z_end) const {
     if(debug) std::cout<<"After ODE Calc:"<<std::endl;
     if(debug) for(size_t i=0;i<mu.size();i++) std::cout<<"\tmu["<<i<<"] = "<<mu[i]<<std::endl;
 
-    return mu[0];
+    return 3*mu[0]+2*mu[1];//as defined in 1811.11104; used q1=-2b and b = -(q+t)
 
 }
 
@@ -94,7 +94,8 @@ void top_source::operator()(const state_type &omega , state_type &domega , const
         //Rescaled chemical potential like in 1811.11104
         double mu_M     =   (omega[1]/kappa_tR - omega[0]/kappa_q);
         double bR       =   -(omega[1]+omega[0]);
-        double mu_SS    =   2*omega[0]/kappa_q - omega[1]/kappa_tR - bR/kappa_QR_0;
+        // double mu_SS    =   2*omega[0]/kappa_q - omega[1]/kappa_tR - bR/kappa_QR_0;
+        double mu_SS = 2*omega[0]/kappa_q - omega[1]/kappa_tR - 3*bR; // used q = -2 b ; k_QR_0=3 and k_QL_0=6
         double mu_Y     =   omega[1]/kappa_tR - omega[0]/kappa_q - omega[2]/kappa_H_0-omega[3]/kappa_H_0;
 
         Calc_Gam_obj.set_class(Temp,vw,mt, msqrt_thermal_top,dmsqrt_thermal_top);
