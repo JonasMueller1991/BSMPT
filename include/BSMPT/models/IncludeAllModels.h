@@ -56,6 +56,7 @@ enum class ModelIDs
     TEMPLATE,
     PNGDM,
     HSPT,
+    HS2HDM,
 
 
     // DO NOT EDIT the part below
@@ -72,7 +73,8 @@ const std::unordered_map<std::string,ModelIDs> ModelNames{
     {"cxsm",ModelIDs::CXSM},
     {"pngdm",ModelIDs::PNGDM},
     {"template",ModelIDs::TEMPLATE},
-    {"hspt",ModelIDs::HSPT}
+    {"hspt",ModelIDs::HSPT},
+    {"hs2hdm",ModelIDs::HS2HDM}
 };
 
 /**

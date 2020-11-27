@@ -481,6 +481,7 @@ namespace BSMPT
         if (!SetCurvatureDone)
             SetCurvatureArrays();
 
+        std::cout << "Debug in " << __func__ << std::endl;
         const double ZeroMass = std::pow(10, -5);
         MatrixXd MassHiggs(NHiggs, NHiggs), MassGauge(NGauge, NGauge);
         MatrixXcd MassQuark(NQuarks, NQuarks), MassLepton(NLepton, NLepton);
@@ -496,7 +497,7 @@ namespace BSMPT
         MassSquaredQuark.resize(NQuarks);
         MassSquaredLepton.resize(NLepton);
         MassSqaredNonSMFermion.resize(NNonSMFermion); //NEW
-        std::cout << "MassSquaredNonSMFermion resized" << std::endl;
+
         HiggsRotationMatrix.resize(NHiggs);
         for (std::size_t i = 0; i < NHiggs; i++)
             HiggsRotationMatrix[i].resize(NHiggs);
@@ -562,14 +563,17 @@ namespace BSMPT
         MIJNonSMFermion = MatrixXcd::Zero(NNonSMFermion, NNonSMFermion);
         for (std::size_t a = 0; a < NNonSMFermion; a++)
         {
-            std::cout << "test call for NNonSMFermion =0 " << std::endl;
             for (std::size_t b = 0; b < NNonSMFermion; b++)
             {
                 for (std::size_t k = 0; k < NHiggs; k++)
+                {
                     MIJNonSMFermion(a, b) += Curvature_NonSMFermion_F2H1[a][b][k] * HiggsVev[k]; //Yukawa-like mass terms added to mass matrix
-                MIJNonSMFermion(a, b) += Curvature_NonSMFermion_F2[a][b];                        //Majorana Mass terms added to mass matrix
+                }
+
+                MIJNonSMFermion(a, b) += Curvature_NonSMFermion_F2[a][b]; //Majorana Mass terms added to mass matrix
             }
         }
+        MassNonSMFermion = MIJNonSMFermion.conjugate() * MIJNonSMFermion;
 
         MatrixXd HiggsRot(NHiggs, NHiggs), GaugeRot(NGauge, NGauge), QuarkRot(NQuarks, NQuarks), LepRot(NLepton, NLepton), NonSMFermionRot(NNonSMFermion, NNonSMFermion);
         HiggsRot = MatrixXd::Identity(NHiggs, NHiggs);
@@ -621,11 +625,13 @@ namespace BSMPT
         if (NNonSMFermion > 0)
         {
             SelfAdjointEigenSolver<MatrixXcd> esNonSMFermion(MassNonSMFermion);
-            std::cout << "does this work?" << std::endl;
             NonSMFermionRot = esNonSMFermion.eigenvectors().transpose().real(); //Rotation matrix to mass eigenbasis
-            std::cout << "does this work?" << std::endl;
             for (std::size_t i = 0; i < NNonSMFermion; i++)
+            {
                 MassSqaredNonSMFermion[i] = esNonSMFermion.eigenvalues().real()[i];
+                std::cout << "\tMassSquaredNonSMFermion[" << i << "] = " << MassSqaredNonSMFermion[i] << std::endl;
+                std::cout << "\t\tsqareroot[" << i << "] = " << std::sqrt(std::abs(MassSqaredNonSMFermion[i])) << std::endl;
+            }
         }
         for (std::size_t a = 0; a < NGauge; a++)
         {
@@ -716,8 +722,8 @@ namespace BSMPT
                     LambdaNonSMFermion_3[i][j][k] = 0;
                     for (std::size_t l = 0; l < NNonSMFermion; l++)
                     {
-                        LambdaNonSMFermion_3[i][j][k] += conj(Curvature_NonSMFermion_F2H1[i][l][k]) * MIJNonSMFermion(l, j);
-                        LambdaNonSMFermion_3[i][j][k] += conj(MIJNonSMFermion(i, l)) * Curvature_NonSMFermion_F2H1[l][j][k];
+                        LambdaNonSMFermion_3[i][j][k] += conj(Curvature_NonSMFermion_F2H1[i][l][k]) * MIJNonSMFermion(l, j);//1606.07069 at Eq.2.10: Majorana mass terms are taken into account
+                        LambdaNonSMFermion_3[i][j][k] += conj(MIJNonSMFermion(i, l)) * Curvature_NonSMFermion_F2H1[l][j][k];//1606.07069 at Eq.2.10: Majorana mass terms are taken into account
                     }
                     for (std::size_t m = 0; m < NHiggs; m++)
                     {
@@ -1040,7 +1046,7 @@ namespace BSMPT
             throw std::runtime_error(retmes);
         }
         const double NumZero = std::pow(10, -10);
-        VectorXd FirstDeriv(NHiggs), FirstDerivGauge(NHiggs), FirstDerivHiggs(NHiggs), FirstDerivQuark(NHiggs), FirstDerivLepton(NHiggs), FirstDerivNonSMFermion(NNonSMFermion);
+        VectorXd FirstDeriv(NHiggs), FirstDerivGauge(NHiggs), FirstDerivHiggs(NHiggs), FirstDerivQuark(NHiggs), FirstDerivLepton(NHiggs), FirstDerivNonSMFermion(NHiggs);
         FirstDeriv = VectorXd::Zero(NHiggs);
         FirstDerivGauge = VectorXd::Zero(NHiggs);
         FirstDerivHiggs = VectorXd::Zero(NHiggs);
@@ -1091,6 +1097,7 @@ namespace BSMPT
                 if (MassSqaredNonSMFermion[a] != 0)
                 {
                     double Coup = Couplings_NonSMFermion_Higgs_21[a][a][i].real();
+                    // std::cout<<"\t"<<__func__<<" NonSMFermion["<<a<<"] = " << std::sqrt(std::abs(MassSqaredNonSMFermion[a]))<<std::endl;
                     FirstDerivNonSMFermion[i] += MassSqaredNonSMFermion[a] * Coup * (std::log(MassSqaredNonSMFermion[a] / std::pow(scale, 2)) - C_CWcbFermion + 0.5);
                 }
             }
@@ -1220,6 +1227,7 @@ namespace BSMPT
                         double Coup = Couplings_NonSMFermion_Higgs_22[a][a][i][j].real();
                         NonSMFermionPart(i, j) += Coup * MassSqaredNonSMFermion[a] * (std::log(MassSqaredNonSMFermion[a] / std::pow(scale, 2)) - C_CWcbFermion + 0.5);
                     }
+                    // std::cout<<"\t"<<__func__<<"NonSMFermion["<<a<<"] = " << std::sqrt(std::abs(MassSqaredNonSMFermion[a]))<<std::endl;
                 }
             }
         }
@@ -2015,6 +2023,11 @@ namespace BSMPT
     }
     std::vector<double> Class_Potential_Origin::NonSMFermionMassesSquared(const std::vector<double> &v, const int &diff) const
     {
+        bool debug = true;
+        if (debug)
+            std::cout << "Start of debug in " << __func__ << std::endl;
+        if (NNonSMFermion == 0)
+            return std::vector<double>{0};
         std::vector<double> res;
         if (v.size() != nVEV and v.size() != NHiggs)
         {
@@ -2046,19 +2059,24 @@ namespace BSMPT
             for (std::size_t j = 0; j < NNonSMFermion; j++)
             {
 
+                MIJ(i, j) += Curvature_NonSMFermion_F2[i][j]; //Majorana Mass Terms
                 for (std::size_t k = 0; k < NHiggs; k++)
                 {
-                    MIJ(i, j) += Curvature_NonSMFermion_F2[i][j] + Curvature_NonSMFermion_F2H1[i][j][k] * v[k];
+                    MIJ(i, j) += Curvature_NonSMFermion_F2H1[i][j][k] * v[k];
                 }
             }
         }
 
         MassMatrix = MIJ.conjugate() * MIJ;
+        if (debug)
+            std::cout << "MIJ in " << __func__ << " \n\t" << MIJ << std::endl;
+        if (debug)
+            std::cout << "Eigenvalues:" << std::endl;
 
         if (diff <= 0) // no temperature part here
         {
             SelfAdjointEigenSolver<MatrixXcd> es(MassMatrix, EigenvaluesOnly);
-            for (std::size_t i = 0; i < NLepton; i++)
+            for (std::size_t i = 0; i < NNonSMFermion; i++)
             {
                 double tmp = es.eigenvalues().real()[i];
                 if (std::abs(tmp) < ZeroMass)
@@ -2066,6 +2084,9 @@ namespace BSMPT
                 else
                     res.push_back(tmp);
             }
+            if (debug)
+                for (auto x : res)
+                    std::cout << "\t" << std::sqrt(std::abs(x)) << std::endl;
         }
         else if (diff > 0 and static_cast<size_t>(diff) <= NHiggs)
         {
@@ -2315,10 +2336,10 @@ namespace BSMPT
                     res += -6 * fermion(QuarkMassesVec[k], Temp, 0);
                 for (std::size_t k = 0; k < NLepton; k++)
                     res += -2 * fermion(LeptonMassesVec[k], Temp, 0);
-                if(NNonSMFermion>0)
+                if (NNonSMFermion > 0)
                 {
-                for (std::size_t k = 0; k < NNonSMFermion; k++)
-                    res += -2 * fermion(NonSMFermionMassVec[k], Temp, 0); //Non SM fermion contributions
+                    for (std::size_t k = 0; k < NNonSMFermion; k++)
+                        res += -2 * fermion(NonSMFermionMassVec[k], Temp, 0); //Non SM fermion contributions
                 }
             }
             else
@@ -3077,8 +3098,9 @@ namespace BSMPT
 
             SelfAdjointEigenSolver<MatrixXd> esTree(MassMatrix, EigenvaluesOnly);
             SelfAdjointEigenSolver<MatrixXd> esNLO(MassMatrix + HesseVCT + HesseWeinberg, EigenvaluesOnly);
+            SelfAdjointEigenSolver<MatrixXd> esCANCEL(HesseVCT + HesseWeinberg, EigenvaluesOnly);
 
-            std::vector<double> TreeMass, NLOMass;
+            std::vector<double> TreeMass, NLOMass, CancelMass;
 
             for (std::size_t i = 0; i < NHiggs; i++)
             {
@@ -3090,13 +3112,40 @@ namespace BSMPT
                     NLOMass.push_back(0);
                 else
                     NLOMass.push_back(esNLO.eigenvalues()[i]);
+                if (std::abs(esCANCEL.eigenvalues()[i]) < ZeroMass)
+                    CancelMass.push_back(0);
+                else
+                    CancelMass.push_back(esCANCEL.eigenvalues()[i]);
+            }
+            std::cout << "Minimum Values" << std::endl;
+            std::vector<double> FirstDeriv;
+            FirstDeriv.resize(NHiggs);
+            for (std::size_t i = 0; i < NHiggs; i++)
+            {
+                FirstDeriv.push_back(NablaWeinberg[i] + NablaVCT(i));
+                std::cout << "\t\tNablaWeinberg[" << i << "] = " << NablaWeinberg[i] << std::endl;
+                std::cout << "\t\tNablaVCT[" << i << "] = " << NablaVCT(i) << std::endl;
+                std::cout << "Sum Nabla[" << i << "] = " << FirstDeriv[i] << std::endl;
+            }
+            std::cout << "Second Renormalization Condition check:" << std::endl;
+            for (std::size_t i = 0; i < NHiggs; i++)
+            {
+                for (std::size_t j = 0; j < NHiggs; j++)
+                {
+                    // if (std::abs(HesseWeinberg(i, j) + HesseVCT(i, j)) > 1e-4)
+                    // {
+                        std::cout << "\t\tHCW[" << i << "," << j << "] = " << HesseWeinberg(i, j) << "\t HCT[" << i << "," << j << "] = " << HesseVCT(i, j) << std::endl;
+                        std::cout << "\tHCW+HCT = " << HesseWeinberg(i, j) + HesseVCT(i, j) << std::endl;
+                    // }
+                }
             }
 
             std::cout << "The higgs masses squared at LO | NLO are : " << std::endl;
             for (std::size_t i = 0; i < NHiggs; i++)
             {
-                std::cout << "m_i^2 = " << TreeMass[i] << " | " << NLOMass[i] << std::endl;
+                // std::cout << "m_i^2 = " << TreeMass[i] << " | " << NLOMass[i] << std::endl;
                 std::cout << "m_i = " << std::sqrt(std::abs(TreeMass[i])) << " | " << std::sqrt(std::abs(NLOMass[i])) << std::endl;
+                std::cout << " 0 = " << std::sqrt(std::abs(CancelMass[i])) << std::endl;
             }
 
             double sum{0.0};

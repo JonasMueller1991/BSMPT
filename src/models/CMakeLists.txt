@@ -14,6 +14,7 @@ set(header
   ${header_path}/ClassTemplate.h
   ${header_path}/ClassPotentialPNGDM.h
   ${header_path}/ClassPotentialHighScalePT.h
+  ${header_path}/ClassPotentialHighScaleR2HDM.h
 )
 
 set(src
@@ -31,6 +32,7 @@ set(src
   ClassTemplate.cpp
   ClassPotentialPNGDM.cpp
   ClassPotentialHighScalePT.cpp
+  ClassPotentialHighScaleR2HDM.cpp
 )
 
 add_library(Models ${header} ${src})
