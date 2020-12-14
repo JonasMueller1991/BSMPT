@@ -722,8 +722,8 @@ namespace BSMPT
                     LambdaNonSMFermion_3[i][j][k] = 0;
                     for (std::size_t l = 0; l < NNonSMFermion; l++)
                     {
-                        LambdaNonSMFermion_3[i][j][k] += conj(Curvature_NonSMFermion_F2H1[i][l][k]) * MIJNonSMFermion(l, j);//1606.07069 at Eq.2.10: Majorana mass terms are taken into account
-                        LambdaNonSMFermion_3[i][j][k] += conj(MIJNonSMFermion(i, l)) * Curvature_NonSMFermion_F2H1[l][j][k];//1606.07069 at Eq.2.10: Majorana mass terms are taken into account
+                        LambdaNonSMFermion_3[i][j][k] += conj(Curvature_NonSMFermion_F2H1[i][l][k]) * MIJNonSMFermion(l, j); //1606.07069 at Eq.2.10: Majorana mass terms are taken into account
+                        LambdaNonSMFermion_3[i][j][k] += conj(MIJNonSMFermion(i, l)) * Curvature_NonSMFermion_F2H1[l][j][k]; //1606.07069 at Eq.2.10: Majorana mass terms are taken into account
                     }
                     for (std::size_t m = 0; m < NHiggs; m++)
                     {
@@ -1029,6 +1029,7 @@ namespace BSMPT
                 HiggsRotationMatrix[i][j] = HiggsRot(i, j);
             }
         }
+
 
         CalcCouplingsdone = true;
 
@@ -3132,11 +3133,11 @@ namespace BSMPT
             {
                 for (std::size_t j = 0; j < NHiggs; j++)
                 {
-                    // if (std::abs(HesseWeinberg(i, j) + HesseVCT(i, j)) > 1e-4)
-                    // {
-                        std::cout << "\t\tHCW[" << i << "," << j << "] = " << HesseWeinberg(i, j) << "\t HCT[" << i << "," << j << "] = " << HesseVCT(i, j) << std::endl;
-                        std::cout << "\tHCW+HCT = " << HesseWeinberg(i, j) + HesseVCT(i, j) << std::endl;
-                    // }
+                    if (std::abs(HesseWeinberg(i, j) + HesseVCT(i, j)) > 1e-4)
+                    {
+                    std::cout << "\t\tHCW[" << i << "," << j << "] = " << HesseWeinberg(i, j) << "\t HCT[" << i << "," << j << "] = " << HesseVCT(i, j) << std::endl;
+                    std::cout << "\tHCW+HCT = " << HesseWeinberg(i, j) + HesseVCT(i, j) << std::endl;
+                    }
                 }
             }
 
