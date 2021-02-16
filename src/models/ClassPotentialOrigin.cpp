@@ -1,3 +1,4 @@
+
 /*
  * ClassPotentialOrigin.cpp
  *
@@ -625,13 +626,29 @@ namespace BSMPT
         if (NNonSMFermion > 0)
         {
             SelfAdjointEigenSolver<MatrixXcd> esNonSMFermion(MassNonSMFermion);
-            NonSMFermionRot = esNonSMFermion.eigenvectors().transpose().real(); //Rotation matrix to mass eigenbasis
+            NonSMFermionRot = esNonSMFermion.eigenvectors().transpose().real(); //rotation matrix of Lambda_nF = M^dag M
+
             for (std::size_t i = 0; i < NNonSMFermion; i++)
             {
                 MassSqaredNonSMFermion[i] = esNonSMFermion.eigenvalues().real()[i];
-                std::cout << "\tMassSquaredNonSMFermion[" << i << "] = " << MassSqaredNonSMFermion[i] << std::endl;
-                std::cout << "\t\tsqareroot[" << i << "] = " << std::sqrt(std::abs(MassSqaredNonSMFermion[i])) << std::endl;
             }
+            /*
+             * Debug
+             *
+             */
+            std::cout<<"Rotation Matrix of NonSMFermion:\n\n"<<std::endl;
+            std::cout<<NonSMFermionRot<<std::endl;
+            MatrixXd foo ;
+            foo = NonSMFermionRot*NonSMFermionRot.transpose();
+            for(size_t i=0;i<NNonSMFermion;i++){
+                for(size_t j=0;j<NNonSMFermion;j++){
+                    if(foo(i,j)<1e-12) foo(i,j)=0;
+                }
+            }
+            std::cout<<"Rot^T Rot = \n";
+            std::cout<<foo<<std::endl;
+
+
         }
         for (std::size_t a = 0; a < NGauge; a++)
         {
@@ -2067,8 +2084,19 @@ namespace BSMPT
                 }
             }
         }
+        if(debug)
+        {
+            ComplexEigenSolver<MatrixXcd> es(MIJ,false);
+            std::cout<<"Complex Eigenvalues:"<<std::endl;
+            for(std::size_t i=0;i<NNonSMFermion;i++)
+            {
+                auto tmp = es.eigenvalues()[i];
+                std::cout<<"\tEW["<<i<<"] = " << tmp<<std::endl;
+            }
+        }
 
         MassMatrix = MIJ.conjugate() * MIJ;
+        // MassMatrix = MIJ * MIJ
         if (debug)
             std::cout << "MIJ in " << __func__ << " \n\t" << MIJ << std::endl;
         if (debug)
