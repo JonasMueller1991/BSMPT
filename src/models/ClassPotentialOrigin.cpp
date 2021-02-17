@@ -576,12 +576,13 @@ namespace BSMPT
         }
         MassNonSMFermion = MIJNonSMFermion.conjugate() * MIJNonSMFermion;
 
-        MatrixXd HiggsRot(NHiggs, NHiggs), GaugeRot(NGauge, NGauge), QuarkRot(NQuarks, NQuarks), LepRot(NLepton, NLepton), NonSMFermionRot(NNonSMFermion, NNonSMFermion);
+        MatrixXd HiggsRot(NHiggs, NHiggs), GaugeRot(NGauge, NGauge), QuarkRot(NQuarks, NQuarks), LepRot(NLepton, NLepton);
+        MatrixXcd NonSMFermionRot(NNonSMFermion, NNonSMFermion);
         HiggsRot = MatrixXd::Identity(NHiggs, NHiggs);
         GaugeRot = MatrixXd::Identity(NGauge, NGauge);
         QuarkRot = MatrixXd::Identity(NQuarks, NQuarks);
         LepRot = MatrixXd::Identity(NLepton, NLepton);
-        NonSMFermionRot = MatrixXd::Identity(NNonSMFermion, NNonSMFermion);
+        NonSMFermionRot = MatrixXcd::Identity(NNonSMFermion, NNonSMFermion);
 
         SelfAdjointEigenSolver<MatrixXd> es;
 
@@ -626,8 +627,7 @@ namespace BSMPT
         if (NNonSMFermion > 0)
         {
             SelfAdjointEigenSolver<MatrixXcd> esNonSMFermion(MassNonSMFermion);
-            NonSMFermionRot = esNonSMFermion.eigenvectors().transpose().real(); //rotation matrix of Lambda_nF = M^dag M
-
+            NonSMFermionRot = esNonSMFermion.eigenvectors().transpose(); //the rotation matrix can be complex!
             for (std::size_t i = 0; i < NNonSMFermion; i++)
             {
                 MassSqaredNonSMFermion[i] = esNonSMFermion.eigenvalues().real()[i];
@@ -636,17 +636,19 @@ namespace BSMPT
              * Debug
              *
              */
-            std::cout<<"Rotation Matrix of NonSMFermion:\n\n"<<std::endl;
-            std::cout<<NonSMFermionRot<<std::endl;
-            MatrixXd foo ;
-            foo = NonSMFermionRot*NonSMFermionRot.transpose();
-            for(size_t i=0;i<NNonSMFermion;i++){
-                for(size_t j=0;j<NNonSMFermion;j++){
-                    if(foo(i,j)<1e-12) foo(i,j)=0;
-                }
-            }
-            std::cout<<"Rot^T Rot = \n";
-            std::cout<<foo<<std::endl;
+//                    MatrixXcd cNonSMFermionRot = esNonSMFermion.eigenvectors().transpose();
+//            std::cout<<"Rotation Matrix of NonSMFermion:\n\n"<<std::endl;
+//            std::cout<<cNonSMFermionRot<<std::endl;
+//            MatrixXcd foo ;
+//            foo = cNonSMFermionRot.transpose().conjugate()*cNonSMFermionRot;
+//            for(size_t i=0;i<NNonSMFermion;i++){
+//                for(size_t j=0;j<NNonSMFermion;j++){
+//                    if(std::abs(foo(i,j).real())<1e-12) foo(i,j)=std::complex<double> (0,foo(i,j).imag());
+//                    if(std::abs(foo(i,j).imag())<1e-12) foo(i,j)=std::complex<double> (foo(i,j).real(),0);
+//                }
+//            }
+//            std::cout<<"Rot^T Rot = \n";
+//            std::cout<<foo<<std::endl;
 
 
         }
@@ -1012,7 +1014,7 @@ namespace BSMPT
                         {
                             for (std::size_t is = 0; is < NHiggs; is++)
                             {
-                                double RotFac = NonSMFermionRot(a, as) * NonSMFermionRot(b, bs) * HiggsRot(i, is);
+                                std::complex<double> RotFac = NonSMFermionRot(a, as) * NonSMFermionRot(b, bs) * HiggsRot(i, is);
                                 Couplings_NonSMFermion_Higgs_21[a][b][i] += RotFac * LambdaNonSMFermion_3[as][bs][is];
                             }
                         }
@@ -1028,7 +1030,7 @@ namespace BSMPT
                                 {
                                     for (std::size_t js = 0; js < NHiggs; js++)
                                     {
-                                        double RotFac = NonSMFermionRot(a, as) * NonSMFermionRot(b, bs) * HiggsRot(i, is) * HiggsRot(j, js);
+                                        std::complex<double> RotFac = NonSMFermionRot(a, as) * NonSMFermionRot(b, bs) * HiggsRot(i, is) * HiggsRot(j, js);
                                         Couplings_NonSMFermion_Higgs_22[a][b][i][j] += RotFac * LambdaNonSMFermion_4[as][bs][is][js];
                                     }
                                 }
@@ -1114,6 +1116,11 @@ namespace BSMPT
             {
                 if (MassSqaredNonSMFermion[a] != 0)
                 {
+
+                    if(Couplings_NonSMFermion_Higgs_21[a][a][i].imag()>1e-12){
+                        std::cout<<"FUCK"<<std::endl;
+                        std::cout<<"non-zero im-part = " << Couplings_NonSMFermion_Higgs_21[a][a][i]<<std::endl;
+                    }
                     double Coup = Couplings_NonSMFermion_Higgs_21[a][a][i].real();
                     // std::cout<<"\t"<<__func__<<" NonSMFermion["<<a<<"] = " << std::sqrt(std::abs(MassSqaredNonSMFermion[a]))<<std::endl;
                     FirstDerivNonSMFermion[i] += MassSqaredNonSMFermion[a] * Coup * (std::log(MassSqaredNonSMFermion[a] / std::pow(scale, 2)) - C_CWcbFermion + 0.5);
@@ -1159,12 +1166,13 @@ namespace BSMPT
         }
         std::vector<double> res;
         const double NumZero = std::pow(10, -10);
-        MatrixXd GaugePart(NHiggs, NHiggs), HiggsPart(NHiggs, NHiggs), QuarkPart(NHiggs, NHiggs), LeptonPart(NHiggs, NHiggs), NonSMFermionPart(NHiggs, NHiggs);
+        MatrixXd GaugePart(NHiggs, NHiggs), HiggsPart(NHiggs, NHiggs), QuarkPart(NHiggs, NHiggs), LeptonPart(NHiggs, NHiggs);
+        MatrixXcd NonSMFermionPart(NHiggs, NHiggs);
         GaugePart = MatrixXd::Zero(NHiggs, NHiggs);
         HiggsPart = MatrixXd::Zero(NHiggs, NHiggs);
         QuarkPart = MatrixXd::Zero(NHiggs, NHiggs);
         LeptonPart = MatrixXd::Zero(NHiggs, NHiggs);
-        NonSMFermionPart = MatrixXd::Zero(NHiggs, NHiggs);
+        NonSMFermionPart = MatrixXcd::Zero(NHiggs, NHiggs);
 
         for (std::size_t i = 0; i < NHiggs; i++)
         {
@@ -1236,13 +1244,13 @@ namespace BSMPT
                 {
                     for (std::size_t b = 0; b < NNonSMFermion; b++)
                     {
-                        double Coup = (Couplings_NonSMFermion_Higgs_21[a][b][i] * Couplings_NonSMFermion_Higgs_21[b][a][j]).real();
-                        double Br = fbase(MassSqaredNonSMFermion[a], MassSqaredNonSMFermion[b]) - C_CWcbFermion + 0.5;
+                        std::complex<double> Coup = (Couplings_NonSMFermion_Higgs_21[a][b][i]*Couplings_NonSMFermion_Higgs_21[b][a][j]);
+                        std::complex<double> Br = fbase(MassSqaredNonSMFermion[a], MassSqaredNonSMFermion[b]) - C_CWcbFermion + 0.5;
                         NonSMFermionPart(i, j) += Coup * Br;
                     }
                     if (MassSqaredNonSMFermion[a] != 0)
                     {
-                        double Coup = Couplings_NonSMFermion_Higgs_22[a][a][i][j].real();
+                        std::complex<double> Coup = Couplings_NonSMFermion_Higgs_22[a][a][i][j];
                         NonSMFermionPart(i, j) += Coup * MassSqaredNonSMFermion[a] * (std::log(MassSqaredNonSMFermion[a] / std::pow(scale, 2)) - C_CWcbFermion + 0.5);
                     }
                     // std::cout<<"\t"<<__func__<<"NonSMFermion["<<a<<"] = " << std::sqrt(std::abs(MassSqaredNonSMFermion[a]))<<std::endl;
@@ -1256,7 +1264,7 @@ namespace BSMPT
         LeptonPart *= -1;
         NonSMFermionPart *= -1; //NEW
 
-        MatrixXd Storage(NHiggs, NHiggs);
+        MatrixXcd Storage(NHiggs, NHiggs);
         Storage = HiggsPart + GaugePart + QuarkPart + LeptonPart + NonSMFermionPart;
 
         for (std::size_t i = 0; i < NHiggs; i++)
@@ -1267,7 +1275,7 @@ namespace BSMPT
                     Storage(i, j) = 0;
             }
         }
-        MatrixXd ResMatrix;
+        MatrixXcd ResMatrix;
         MatrixXd HiggsRot(NHiggs, NHiggs);
         for (std::size_t i = 0; i < NHiggs; i++)
         {
@@ -1289,12 +1297,12 @@ namespace BSMPT
                     ResMatrix(i, j) = 0;
             }
         }
-
         for (std::size_t i = 0; i < NHiggs; i++)
         {
             for (std::size_t j = 0; j < NHiggs; j++)
             {
-                res.push_back(ResMatrix(j, i));
+                if(ResMatrix(i,j).imag()>1e-5) std::cout<<"ResMatrix(" << i <<" , "<<j<<" = " << ResMatrix(i,j)<<std::endl;
+                res.push_back(ResMatrix(j, i).real());
             }
         }
 
@@ -2084,18 +2092,8 @@ namespace BSMPT
                 }
             }
         }
-        if(debug)
-        {
-            ComplexEigenSolver<MatrixXcd> es(MIJ,false);
-            std::cout<<"Complex Eigenvalues:"<<std::endl;
-            for(std::size_t i=0;i<NNonSMFermion;i++)
-            {
-                auto tmp = es.eigenvalues()[i];
-                std::cout<<"\tEW["<<i<<"] = " << tmp<<std::endl;
-            }
-        }
 
-        MassMatrix = MIJ.conjugate() * MIJ;
+        MassMatrix = MIJ.conjugate().transpose() * MIJ;
         // MassMatrix = MIJ * MIJ
         if (debug)
             std::cout << "MIJ in " << __func__ << " \n\t" << MIJ << std::endl;
