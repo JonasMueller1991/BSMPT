@@ -1065,5 +1065,7 @@ namespace BSMPT
         const double &Temp) const;
   };
 
+  Eigen::MatrixXcd chop(Eigen::MatrixXcd & input,size_t dim);
+
 } // namespace BSMPT
 #endif /* CLASSPOTENTIALORIGIN_H_ */

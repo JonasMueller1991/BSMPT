@@ -691,13 +691,13 @@ std::vector<double> Class_Potential_R2HDM::calc_CT() const
 
 
 
-//	double Identities[5];
-//	Identities[0] = HesseWeinberg(0, 0) - HesseWeinberg(1, 1);
-//	Identities[1] = -HesseWeinberg(3, 3) + HesseWeinberg(2, 2);
-//	Identities[2] = (HesseWeinberg(1, 1) * v1 - HesseWeinberg(5, 5) * v1 + HesseWeinberg(1, 3) * v2 - HesseWeinberg(5, 7) * v2) / v2;
-//	Identities[3] = -HesseWeinberg(0, 2) + HesseWeinberg(1, 3);
-//	Identities[4] = -1 / v2 * (HesseWeinberg(5, 7) * v1 + HesseWeinberg(7, 7) * v2 - HesseWeinberg(1, 3) * v1 - HesseWeinberg(3, 3) * v2);
-
+    double Identities[5];
+    Identities[0] = HesseWeinberg(0, 0) - HesseWeinberg(1, 1);
+    Identities[1] = -HesseWeinberg(3, 3) + HesseWeinberg(2, 2);
+    Identities[2] = (HesseWeinberg(1, 1) * v1 - HesseWeinberg(5, 5) * v1 + HesseWeinberg(1, 3) * v2 - HesseWeinberg(5, 7) * v2) / v2;
+    Identities[3] = -HesseWeinberg(0, 2) + HesseWeinberg(1, 3);
+    Identities[4] = -1 / v2 * (HesseWeinberg(5, 7) * v1 + HesseWeinberg(7, 7) * v2 - HesseWeinberg(1, 3) * v1 - HesseWeinberg(3, 3) * v2);
+    for(int i=0;i<5;i++)std::cout<<"\tRenormCond["<<i<<"] = "<<Identities[i]<<std::endl;
 
 
     return parCT;

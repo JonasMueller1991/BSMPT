@@ -59,14 +59,14 @@ public:
   double CTempC1=0,CTempC2=0,CTempCS=0;
 
   /* EWino Parameter*/
-  double MWTilde=100;//Mass W-Gaugino
-  double MBTilde=100;//Mass B-Gaugino  
-  double MuSplit=100;//SUSY Split Scale
+  double MWTilde=0;//Mass W-Gaugino
+  double MBTilde=0;//Mass B-Gaugino
+  double MuSplit=0;//SUSY Split Scale
 
-  double g1uu=1;//Gaugino Gauge Couplings
-  double g2uu=1;//Gaugino Gauge Couplings
-  double g1dd=1;//Gaugino Gauge Couplings
-  double g2dd=1;//Gaugino Gauge Couplings
+  double g1uu=0;//Gaugino Gauge Couplings
+  double g2uu=0;//Gaugino Gauge Couplings
+  double g1dd=0;//Gaugino Gauge Couplings
+  double g2dd=0;//Gaugino Gauge Couplings
   
   double g1du=0;//Gaugino Gauge Couplings
   double g2du=0;//Gaugino Gauge Couplings

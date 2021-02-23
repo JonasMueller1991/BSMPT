@@ -32,7 +32,7 @@
 #include <BSMPT/models/ClassTemplate.h>
 #include <BSMPT/models/ClassPotentialHighScalePT.h>
 #include <BSMPT/models/ClassPotentialHighScaleR2HDM.h>
-#include <BSMPT/models/ClassPotentialHighScaleC2HDM.h>
+
 
 
 
@@ -52,7 +52,6 @@ std::unique_ptr<Class_Potential_Origin> FChoose(ModelIDs choice){
     case ModelIDs::PNGDM: return std::make_unique<Class_PNGDM>();break;
     case ModelIDs::HSPT: return std::make_unique<Class_HighScalePT>();break;
     case ModelIDs::HS2HDM: return std::make_unique<Class_Potential_HighScale_R2HDM>(); break;
-    case ModelIDs::HSC2HDM: return std::make_unique<Class_Potential_HighScale_C2HDM>(); break;
 
 
     default: throw std::runtime_error("Invalid model");

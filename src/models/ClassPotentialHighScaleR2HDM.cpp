@@ -24,7 +24,7 @@ namespace BSMPT
             NNonSMFermion = 8;
             // NNonSMFermion = 0;
 
-            nPar = 8;
+            nPar = 19;
             nParCT = 11;
 
             nVEV = 4;
@@ -139,30 +139,51 @@ namespace BSMPT
         {
             std::stringstream ss(linestr);
             double tmp;
-
             if (UseIndexCol)
             {
                 ss >> tmp;
             }
 
-            for (int k = 1; k <= 8; k++)
+            for (int k = 1; k <= 19; k++)
             {
                 ss >> tmp;
                 if (k == 1)
                     Type = tmp;
-                else if (k == 2)
+                else if (k==2)
+                    MWTilde =tmp;
+                else if (k==3)
+                    MBTilde=tmp;
+                else if (k==4)
+                    MuSplit=tmp;
+                else if(k==5)
+                    g1uu=tmp;
+                else if (k==6)
+                    g2uu = tmp;
+                else if (k==7)
+                    g1dd =tmp;
+                else if(k==8)
+                    g2dd = tmp;
+                else if(k==9)
+                    g1ud = tmp;
+                else if(k==10)
+                    g2ud = tmp;
+                else if(k==11)
+                    g1du = tmp;
+                else if (k==12)
+                    g2du = tmp;
+                else if (k == 13)
                     L1 = tmp;
-                else if (k == 3)
+                else if (k == 14)
                     L2 = tmp;
-                else if (k == 4)
+                else if (k == 15)
                     L3 = tmp;
-                else if (k == 5)
+                else if (k == 16)
                     L4 = tmp;
-                else if (k == 6)
+                else if (k == 17)
                     RL5 = tmp;
-                else if (k == 7)
+                else if (k == 18)
                     RealMMix = tmp;
-                else if (k == 8)
+                else if (k == 19)
                     TanBeta = tmp;
             }
 
@@ -171,14 +192,25 @@ namespace BSMPT
             C_SinBetaSquared = TanBeta * TanBeta * C_CosBetaSquared;
             C_SinBeta = sqrt(C_SinBetaSquared);
 
-            par[6] = TanBeta;
-            par[4] = RL5;
             par[0] = L1;
             par[1] = L2;
             par[2] = L3;
             par[3] = L4;
+            par[4] = RL5;
             par[5] = RealMMix;
+            par[6] = TanBeta;
             par[7] = Type;
+            par[8] = MWTilde;
+            par[9] = MBTilde;
+            par[10] = MuSplit;
+            par[11] = g1uu;
+            par[12] = g2uu;
+            par[13] = g1dd;
+            par[14] = g2dd;
+            par[15] = g1ud;
+            par[16] = g2ud;
+            par[17] = g1du;
+            par[18] = g2du;
 
             set_gen(par);
             return;
@@ -199,6 +231,19 @@ namespace BSMPT
             RL5 = par[4];
             RealMMix = par[5];
             TanBeta = par[6];
+
+            MWTilde = par[8];
+            MBTilde= par[9];
+            MuSplit= par[10];
+            g1uu= par[11];
+            g2uu= par[12];
+            g1dd= par[13];
+            g2dd= par[14];
+            g1ud= par[15];
+            g2ud= par[16];
+            g1du= par[17];
+            g2du= par[18];
+
             beta = std::atan(TanBeta);
             Type = static_cast<int>(par[7]);
             C_CosBetaSquared = 1.0 / (1 + TanBeta * TanBeta);
@@ -633,10 +678,7 @@ namespace BSMPT
             Identities[2] = (HesseWeinberg(1, 1) * v1 - HesseWeinberg(5, 5) * v1 + HesseWeinberg(1, 3) * v2 - HesseWeinberg(5, 7) * v2) / v2;
             Identities[3] = -HesseWeinberg(0, 2) + HesseWeinberg(1, 3);
             Identities[4] = -1 / v2 * (HesseWeinberg(5, 7) * v1 + HesseWeinberg(7, 7) * v2 - HesseWeinberg(1, 3) * v1 - HesseWeinberg(3, 3) * v2);
-            std::cout << "Renorm Ident" << std::endl;
-            for (int i = 0; i < 5; i++)
-                std::cout << Identities[i] << std::endl;
-
+            for(int i=0;i<5;i++)if(std::abs(Identities[i])>1e-4)std::cout<<"\tRenormCond["<<i<<"] = "<<Identities[i] << "not fulfilled"<<std::endl;
             return parCT;
         }
 
