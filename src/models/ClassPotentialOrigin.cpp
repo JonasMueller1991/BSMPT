@@ -1599,7 +1599,7 @@ namespace BSMPT
             //        SetCurvatureArrays();
             throw std::runtime_error("SetCurvatureDone is not set. The Model is not initiliased correctly");
         }
-        MatrixXd MassMatrix(NHiggs, NHiggs);
+        MatrixXcd MassMatrix(NHiggs, NHiggs);
         double ZeroMass = std::pow(10, -5);
         for (std::size_t i = 0; i < NHiggs; i++)
         {
@@ -1622,7 +1622,7 @@ namespace BSMPT
 
         if (diff == 0 and res.size() == 0)
         {
-            SelfAdjointEigenSolver<MatrixXd> es(MassMatrix, EigenvaluesOnly);
+            SelfAdjointEigenSolver<MatrixXcd> es(MassMatrix, EigenvaluesOnly);
             for (std::size_t i = 0; i < NHiggs; i++)
             {
                 double tmp = es.eigenvalues()[i];
@@ -1634,7 +1634,7 @@ namespace BSMPT
         }
         else if (diff == 0 and res.size() == NHiggs)
         {
-            SelfAdjointEigenSolver<MatrixXd> es(MassMatrix, EigenvaluesOnly);
+            SelfAdjointEigenSolver<MatrixXcd> es(MassMatrix, EigenvaluesOnly);
             for (std::size_t i = 0; i < NHiggs; i++)
             {
                 double tmp = es.eigenvalues()[i];
@@ -1651,7 +1651,7 @@ namespace BSMPT
         }
         else if ((size_t)diff <= NHiggs and diff > 0)
         {
-            MatrixXd Diff(NHiggs, NHiggs);
+            MatrixXcd Diff(NHiggs, NHiggs);
             std::size_t x0 = diff - 1;
             for (std::size_t i = 0; i < NHiggs; i++)
             {
@@ -1672,12 +1672,12 @@ namespace BSMPT
         }
         else if (diff == -1)
         {
-            MatrixXd Diff(NHiggs, NHiggs);
+            MatrixXcd Diff(NHiggs, NHiggs);
             for (std::size_t i = 0; i < NHiggs; i++)
             {
                 for (std::size_t j = 0; j < NHiggs; j++)
                 {
-                    Diff(i, j) = 2 * DebyeHiggs[i][j] * Temp;
+                    Diff(i, j) =  (DebyeHiggs[i][j]) * 2. * Temp;
                 }
             }
 
@@ -2694,7 +2694,7 @@ namespace BSMPT
 
         VEVSymmetric = std::vector<double>(NHiggs, 0);
 
-        DebyeHiggs = vec2{NHiggs, std::vector<double>(NHiggs, 0)};
+        DebyeHiggs = vec2Complex{NHiggs, vec1Complex(NHiggs, 0)};
 
         LambdaHiggs_3 = vec3{NHiggs, vec2{NHiggs, std::vector<double>(NHiggs, 0)}};
         LambdaHiggs_3_CT = vec3{NHiggs, vec2{NHiggs, std::vector<double>(NHiggs, 0)}};

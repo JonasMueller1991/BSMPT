@@ -543,7 +543,7 @@ namespace BSMPT
     /**
      * @brief DebyeHiggs Stores the debye corrections to the mass matrix of the Higgs bosons
      */
-    std::vector<std::vector<double>> DebyeHiggs;
+    std::vector<std::vector<std::complex<double>>> DebyeHiggs;
     /**
      * @brief DebyeGauge Stores the debye corrections to the mass matrix of the gauge bosons
      */
