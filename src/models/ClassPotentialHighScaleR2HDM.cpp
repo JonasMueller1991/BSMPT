@@ -149,27 +149,27 @@ namespace BSMPT
                 ss >> tmp;
                 if (k == 1)
                     Type = tmp;
-                else if (k==2)
-                    MWTilde =tmp;
-                else if (k==3)
-                    MBTilde=tmp;
-                else if (k==4)
-                    MuSplit=tmp;
-                else if(k==5)
-                    g1uu=tmp;
-                else if (k==6)
+                else if (k == 2)
+                    MWTilde = tmp;
+                else if (k == 3)
+                    MBTilde = tmp;
+                else if (k == 4)
+                    MuSplit = tmp;
+                else if (k == 5)
+                    g1uu = tmp;
+                else if (k == 6)
                     g2uu = tmp;
-                else if (k==7)
-                    g1dd =tmp;
-                else if(k==8)
+                else if (k == 7)
+                    g1dd = tmp;
+                else if (k == 8)
                     g2dd = tmp;
-                else if(k==9)
+                else if (k == 9)
                     g1ud = tmp;
-                else if(k==10)
+                else if (k == 10)
                     g2ud = tmp;
-                else if(k==11)
+                else if (k == 11)
                     g1du = tmp;
-                else if (k==12)
+                else if (k == 12)
                     g2du = tmp;
                 else if (k == 13)
                     L1 = tmp;
@@ -233,16 +233,16 @@ namespace BSMPT
             TanBeta = par[6];
 
             MWTilde = par[8];
-            MBTilde= par[9];
-            MuSplit= par[10];
-            g1uu= par[11];
-            g2uu= par[12];
-            g1dd= par[13];
-            g2dd= par[14];
-            g1ud= par[15];
-            g2ud= par[16];
-            g1du= par[17];
-            g2du= par[18];
+            MBTilde = par[9];
+            MuSplit = par[10];
+            g1uu = par[11];
+            g2uu = par[12];
+            g1dd = par[13];
+            g2dd = par[14];
+            g1ud = par[15];
+            g2ud = par[16];
+            g1du = par[17];
+            g2du = par[18];
 
             beta = std::atan(TanBeta);
             Type = static_cast<int>(par[7]);
@@ -678,7 +678,9 @@ namespace BSMPT
             Identities[2] = (HesseWeinberg(1, 1) * v1 - HesseWeinberg(5, 5) * v1 + HesseWeinberg(1, 3) * v2 - HesseWeinberg(5, 7) * v2) / v2;
             Identities[3] = -HesseWeinberg(0, 2) + HesseWeinberg(1, 3);
             Identities[4] = -1 / v2 * (HesseWeinberg(5, 7) * v1 + HesseWeinberg(7, 7) * v2 - HesseWeinberg(1, 3) * v1 - HesseWeinberg(3, 3) * v2);
-            for(int i=0;i<5;i++)if(std::abs(Identities[i])>1e-4)std::cout<<"\tRenormCond["<<i<<"] = "<<Identities[i] << "not fulfilled"<<std::endl;
+            for (int i = 0; i < 5; i++)
+                if (std::abs(Identities[i]) > 1e-4)
+                    std::cout << "\tRenormCond[" << i << "] = " << Identities[i] << "not fulfilled" << std::endl;
             return parCT;
         }
 
@@ -1280,102 +1282,102 @@ namespace BSMPT
                 Curvature_NonSMFermion_F2[6][6] = -MWTilde;
                 Curvature_NonSMFermion_F2[7][7] = -MBTilde;
 
-                Curvature_NonSMFermion_F2H1[0][4][4] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][4][5] = (-0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][4][6] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][4][7] = (0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][5][4] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][5][5] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][5][6] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][5][7] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][6][0] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][6][1] = (-0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][6][2] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][6][3] = (0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][7][0] = -g1dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][7][1] = (-0.5*II*g1dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[0][7][2] = -g1uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[0][7][3] = (0.5*II*g1uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[1][4][2] = -g2uu/2.;
-                Curvature_NonSMFermion_F2H1[1][4][3] = 0.5*II*g2uu;
-                Curvature_NonSMFermion_F2H1[1][5][2] = 0.5*II*g2uu;
-                Curvature_NonSMFermion_F2H1[1][5][3] = g2uu/2.;
-                Curvature_NonSMFermion_F2H1[1][6][6] = g2uu/2.;
-                Curvature_NonSMFermion_F2H1[1][6][7] = -0.5*II*g2uu;
-                Curvature_NonSMFermion_F2H1[1][7][6] = -g1uu/2.;
-                Curvature_NonSMFermion_F2H1[1][7][7] = 0.5*II*g1uu;
-                Curvature_NonSMFermion_F2H1[2][4][0] = g2dd/2.;
-                Curvature_NonSMFermion_F2H1[2][4][1] = 0.5*II*g2dd;
-                Curvature_NonSMFermion_F2H1[2][5][0] = 0.5*II*g2dd;
-                Curvature_NonSMFermion_F2H1[2][5][1] = -g2dd/2.;
-                Curvature_NonSMFermion_F2H1[2][6][4] = -g2dd/2.;
-                Curvature_NonSMFermion_F2H1[2][6][5] = -0.5*II*g2dd;
-                Curvature_NonSMFermion_F2H1[2][7][4] = g1dd/2.;
-                Curvature_NonSMFermion_F2H1[2][7][5] = 0.5*II*g1dd;
-                Curvature_NonSMFermion_F2H1[3][4][4] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][4][5] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][4][6] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][4][7] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][5][4] = g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][5][5] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][5][6] = g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][5][7] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][6][0] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][6][1] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][6][2] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][6][3] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][7][0] = (0.5*II*g1dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][7][1] = -g1dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[3][7][2] = (-0.5*II*g1uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[3][7][3] = -g1uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[4][0][4] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[4][0][5] = (-0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[4][0][6] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[4][0][7] = (0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[4][1][2] = -g2uu/2.;
-                Curvature_NonSMFermion_F2H1[4][1][3] = 0.5*II*g2uu;
-                Curvature_NonSMFermion_F2H1[4][2][0] = g2dd/2.;
-                Curvature_NonSMFermion_F2H1[4][2][1] = 0.5*II*g2dd;
-                Curvature_NonSMFermion_F2H1[4][3][4] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[4][3][5] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[4][3][6] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[4][3][7] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[5][0][4] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[5][0][5] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[5][0][6] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[5][0][7] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[5][1][2] = 0.5*II*g2uu;
-                Curvature_NonSMFermion_F2H1[5][1][3] = g2uu/2.;
-                Curvature_NonSMFermion_F2H1[5][2][0] = 0.5*II*g2dd;
-                Curvature_NonSMFermion_F2H1[5][2][1] = -g2dd/2.;
-                Curvature_NonSMFermion_F2H1[5][3][4] = g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[5][3][5] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[5][3][6] = g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[5][3][7] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[6][0][0] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[6][0][1] = (-0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[6][0][2] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[6][0][3] = (0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[6][1][6] = g2uu/2.;
-                Curvature_NonSMFermion_F2H1[6][1][7] = -0.5*II*g2uu;
-                Curvature_NonSMFermion_F2H1[6][2][4] = -g2dd/2.;
-                Curvature_NonSMFermion_F2H1[6][2][5] = -0.5*II*g2dd;
-                Curvature_NonSMFermion_F2H1[6][3][0] = (0.5*II*g2dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[6][3][1] = -g2dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[6][3][2] = (-0.5*II*g2uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[6][3][3] = -g2uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[7][0][0] = -g1dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[7][0][1] = (-0.5*II*g1dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[7][0][2] = -g1uu/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[7][0][3] = (0.5*II*g1uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[7][1][6] = -g1uu/2.;
-                Curvature_NonSMFermion_F2H1[7][1][7] = 0.5*II*g1uu;
-                Curvature_NonSMFermion_F2H1[7][2][4] = g1dd/2.;
-                Curvature_NonSMFermion_F2H1[7][2][5] = 0.5*II*g1dd;
-                Curvature_NonSMFermion_F2H1[7][3][0] = (0.5*II*g1dd)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[7][3][1] = -g1dd/(2.*std::sqrt(2));
-                Curvature_NonSMFermion_F2H1[7][3][2] = (-0.5*II*g1uu)/std::sqrt(2);
-                Curvature_NonSMFermion_F2H1[7][3][3] = -g1uu/(2.*std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][4][4] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][4][5] = (-0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][4][6] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][4][7] = (0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][5][4] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][5][5] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][5][6] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][5][7] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][6][0] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][6][1] = (-0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][6][2] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][6][3] = (0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][7][0] = -g1dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][7][1] = (-0.5 * II * g1dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[0][7][2] = -g1uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[0][7][3] = (0.5 * II * g1uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[1][4][2] = -g2uu / 2.;
+                Curvature_NonSMFermion_F2H1[1][4][3] = 0.5 * II * g2uu;
+                Curvature_NonSMFermion_F2H1[1][5][2] = 0.5 * II * g2uu;
+                Curvature_NonSMFermion_F2H1[1][5][3] = g2uu / 2.;
+                Curvature_NonSMFermion_F2H1[1][6][6] = g2uu / 2.;
+                Curvature_NonSMFermion_F2H1[1][6][7] = -0.5 * II * g2uu;
+                Curvature_NonSMFermion_F2H1[1][7][6] = -g1uu / 2.;
+                Curvature_NonSMFermion_F2H1[1][7][7] = 0.5 * II * g1uu;
+                Curvature_NonSMFermion_F2H1[2][4][0] = g2dd / 2.;
+                Curvature_NonSMFermion_F2H1[2][4][1] = 0.5 * II * g2dd;
+                Curvature_NonSMFermion_F2H1[2][5][0] = 0.5 * II * g2dd;
+                Curvature_NonSMFermion_F2H1[2][5][1] = -g2dd / 2.;
+                Curvature_NonSMFermion_F2H1[2][6][4] = -g2dd / 2.;
+                Curvature_NonSMFermion_F2H1[2][6][5] = -0.5 * II * g2dd;
+                Curvature_NonSMFermion_F2H1[2][7][4] = g1dd / 2.;
+                Curvature_NonSMFermion_F2H1[2][7][5] = 0.5 * II * g1dd;
+                Curvature_NonSMFermion_F2H1[3][4][4] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][4][5] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][4][6] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][4][7] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][5][4] = g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][5][5] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][5][6] = g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][5][7] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][6][0] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][6][1] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][6][2] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][6][3] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][7][0] = (0.5 * II * g1dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][7][1] = -g1dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[3][7][2] = (-0.5 * II * g1uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[3][7][3] = -g1uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[4][0][4] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[4][0][5] = (-0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[4][0][6] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[4][0][7] = (0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[4][1][2] = -g2uu / 2.;
+                Curvature_NonSMFermion_F2H1[4][1][3] = 0.5 * II * g2uu;
+                Curvature_NonSMFermion_F2H1[4][2][0] = g2dd / 2.;
+                Curvature_NonSMFermion_F2H1[4][2][1] = 0.5 * II * g2dd;
+                Curvature_NonSMFermion_F2H1[4][3][4] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[4][3][5] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[4][3][6] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[4][3][7] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[5][0][4] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[5][0][5] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[5][0][6] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[5][0][7] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[5][1][2] = 0.5 * II * g2uu;
+                Curvature_NonSMFermion_F2H1[5][1][3] = g2uu / 2.;
+                Curvature_NonSMFermion_F2H1[5][2][0] = 0.5 * II * g2dd;
+                Curvature_NonSMFermion_F2H1[5][2][1] = -g2dd / 2.;
+                Curvature_NonSMFermion_F2H1[5][3][4] = g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[5][3][5] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[5][3][6] = g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[5][3][7] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[6][0][0] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[6][0][1] = (-0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[6][0][2] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[6][0][3] = (0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[6][1][6] = g2uu / 2.;
+                Curvature_NonSMFermion_F2H1[6][1][7] = -0.5 * II * g2uu;
+                Curvature_NonSMFermion_F2H1[6][2][4] = -g2dd / 2.;
+                Curvature_NonSMFermion_F2H1[6][2][5] = -0.5 * II * g2dd;
+                Curvature_NonSMFermion_F2H1[6][3][0] = (0.5 * II * g2dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[6][3][1] = -g2dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[6][3][2] = (-0.5 * II * g2uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[6][3][3] = -g2uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[7][0][0] = -g1dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[7][0][1] = (-0.5 * II * g1dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[7][0][2] = -g1uu / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[7][0][3] = (0.5 * II * g1uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[7][1][6] = -g1uu / 2.;
+                Curvature_NonSMFermion_F2H1[7][1][7] = 0.5 * II * g1uu;
+                Curvature_NonSMFermion_F2H1[7][2][4] = g1dd / 2.;
+                Curvature_NonSMFermion_F2H1[7][2][5] = 0.5 * II * g1dd;
+                Curvature_NonSMFermion_F2H1[7][3][0] = (0.5 * II * g1dd) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[7][3][1] = -g1dd / (2. * std::sqrt(2));
+                Curvature_NonSMFermion_F2H1[7][3][2] = (-0.5 * II * g1uu) / std::sqrt(2);
+                Curvature_NonSMFermion_F2H1[7][3][3] = -g1uu / (2. * std::sqrt(2));
 
                 /*Yukawa-like couplings*/
             }
@@ -1417,11 +1419,18 @@ namespace BSMPT
             DebyeHiggs[7][7] = CTempC2;
 
             //NEW for Wino Contributions
-            for(size_t iH=0;iH<NHiggs;iH++){
-                for(size_t jH=0;jH<NHiggs;jH++){
-                    for(size_t ii=0;ii<NNonSMFermion;ii++){
-                        for(size_t jj=0;jj<<NNonSMFermion;jj++){
-                            DebyeHiggs[iH][jH]+=(std::conj(Curvature_NonSMFermion_F2H1[ii][jj][iH])*Curvature_NonSMFermion_F2H1[ii][jj][jH])/4.;
+            if (NNonSMFermion > 0)
+            {
+                for (size_t iH = 0; iH < NHiggs; iH++)
+                {
+                    for (size_t jH = 0; jH < NHiggs; jH++)
+                    {
+                        for (size_t ii = 0; ii < NNonSMFermion; ii++)
+                        {
+                            for (size_t jj = 0; jj << NNonSMFermion; jj++)
+                            {
+                                DebyeHiggs[iH][jH] += (std::conj(Curvature_NonSMFermion_F2H1[ii][jj][iH]) * Curvature_NonSMFermion_F2H1[ii][jj][jH]) / 4.;
+                            }
                         }
                     }
                 }
@@ -1437,11 +1446,10 @@ namespace BSMPT
             DebyeGauge[2][2] = 2 * C_g * C_g;
             DebyeGauge[3][3] = 2 * C_gs * C_gs;
 
-            DebyeGauge[0][0] += C_g * C_g/2.;//EWino Contribution
-            DebyeGauge[1][1] += C_g * C_g/2.;//EWino Contribution
-            DebyeGauge[2][2] += C_g * C_g/2.;//EWino Contribution
-            DebyeGauge[3][3] += C_gs * C_gs/2.;//EWino Contribution
-
+            DebyeGauge[0][0] += C_g * C_g / 2.;   //EWino Contribution
+            DebyeGauge[1][1] += C_g * C_g / 2.;   //EWino Contribution
+            DebyeGauge[2][2] += C_g * C_g / 2.;   //EWino Contribution
+            DebyeGauge[3][3] += C_gs * C_gs / 2.; //EWino Contribution
 
             return true;
         }
